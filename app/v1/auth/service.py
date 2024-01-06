@@ -4,14 +4,20 @@
 from fastapi import HTTPException, status
 
 from app.v1.auth.controller import UserController
-from app.v1.auth.dto import RegisterRequestDTO, User
+from app.v1.auth.dto import (
+    RegisterRequestDTO,
+    RegisterResponseDTO,
+    User
+)
 
 
 class AuthService:
     def __init__(self, user_controller: UserController):
         self.user_controller = user_controller
 
-    def register_new_user(self, new_user: RegisterRequestDTO) -> User:
+    def register_new_user(
+        self, new_user: RegisterRequestDTO
+    ) -> RegisterResponseDTO:
         existing_user = (
             self.user_controller.get_user_by_username(new_user.username)
         )

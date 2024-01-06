@@ -22,5 +22,4 @@ class PostSuccessResponse(BaseSuccessResponse):
 
 class BaseFailResponse(BaseModel):
     status: str = ResponseStatusMsg.FAIL.value
-    message: str
     detail: str | None
