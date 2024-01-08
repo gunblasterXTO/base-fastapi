@@ -6,11 +6,11 @@ from starlette.middleware.base import (
     RequestResponseEndpoint
 )
 
-from app.helpers.logger import CustomLogger
+from app.helpers.logger import logger
 from app.middleware.logger import LogMiddleware
 
 
-log_middlware = LogMiddleware(logger=CustomLogger())
+log_middlware = LogMiddleware(logger=logger)
 
 
 class Middlewares(BaseHTTPMiddleware):
