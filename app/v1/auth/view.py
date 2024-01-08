@@ -2,6 +2,7 @@
 from fastapi import status
 from fastapi.responses import JSONResponse
 
+from app.helpers.logger import logger
 from app.helpers.response import PostSuccessResponse
 from app.v1.auth.controller import UserController
 from app.v1.auth.dto import LoginRequestDTO, RegisterRequestDTO
@@ -20,6 +21,7 @@ class AuthViews:
         )
 
     async def login(self, user: LoginRequestDTO) -> JSONResponse:
+        logger.debug("User loggin in")
         _ = auth_service.authenticate_user(
             username=user.username, password=user.password
         )

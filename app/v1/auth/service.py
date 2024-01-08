@@ -3,6 +3,7 @@
 # might be dependent to controller according to use cases.
 from fastapi import HTTPException, status
 
+from app.helpers.logger import logger
 from app.v1.auth.controller import UserController
 from app.v1.auth.dto import (
     RegisterRequestDTO,
@@ -34,6 +35,7 @@ class AuthService:
         if user and user.pwd == password:
             return user
         else:
+            logger.error("Wrong username or password")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid credentials"
