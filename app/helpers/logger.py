@@ -24,37 +24,37 @@ class CustomLogger:
         )
 
         # debug log: log process
-        self.debug_logger = logging.getLogger("debug_log")
-        self.debug_logger.setLevel(logging.DEBUG)
+        self._debug_logger = logging.getLogger("debug_log")
+        self._debug_logger.setLevel(logging.DEBUG)
         debug_file_handler = RotatingFileHandler(
             filename=Settings.DEBUG_LOG_FILE,
             maxBytes=CustomLogger.MAX_SIZE,
             backupCount=CustomLogger.BACKUP_COUNT
         )
         debug_file_handler.setFormatter(formatter)
-        self.debug_logger.addHandler(debug_file_handler)
+        self._debug_logger.addHandler(debug_file_handler)
 
         # info log: log incoming request and response
-        self.info_logger = logging.getLogger("info_log")
-        self.info_logger.setLevel(logging.INFO)
+        self._info_logger = logging.getLogger("info_log")
+        self._info_logger.setLevel(logging.INFO)
         info_file_handler = RotatingFileHandler(
             filename=Settings.INFO_LOG_FILE,
             maxBytes=CustomLogger.MAX_SIZE,
             backupCount=CustomLogger.BACKUP_COUNT
         )
         info_file_handler.setFormatter(formatter)
-        self.info_logger.addHandler(info_file_handler)
+        self._info_logger.addHandler(info_file_handler)
 
         # error log: log error in the process
-        self.err_logger = logging.getLogger("err_log")
-        self.err_logger.setLevel(logging.ERROR)
+        self._err_logger = logging.getLogger("err_log")
+        self._err_logger.setLevel(logging.ERROR)
         err_file_handler = RotatingFileHandler(
             filename=Settings.ERR_LOG_FILE,
             maxBytes=CustomLogger.MAX_SIZE,
             backupCount=CustomLogger.BACKUP_COUNT
         )
         err_file_handler.setFormatter(formatter)
-        self.err_logger.addHandler(err_file_handler)
+        self._err_logger.addHandler(err_file_handler)
 
     @staticmethod
     def _generate_uuid() -> str:
@@ -82,7 +82,7 @@ class CustomLogger:
             "query_param": query_param,
             "payload": payload
         }
-        self.info_logger.info(accept_log)
+        self._info_logger.info(accept_log)
 
     def complete(self, result: str, time: float) -> None:
         """Record response from server.
@@ -96,7 +96,7 @@ class CustomLogger:
             "req_id": self.uuid,
             "time": time
         }
-        self.info_logger.info(complete_log)
+        self._info_logger.info(complete_log)
 
     def _free_text_log(self, msg: str) -> str:
         """Log message generator as a one source format
@@ -112,7 +112,7 @@ class CustomLogger:
         Args:
             - msg: free text log message
         """
-        self.debug_logger.debug(self._free_text_log(msg))
+        self._debug_logger.debug(self._free_text_log(msg))
 
     def error(self, msg: str) -> None:
         """Record log in error level
@@ -120,4 +120,7 @@ class CustomLogger:
         Args:
             - msg: free text log message
         """
-        self.err_logger.error(self._free_text_log(msg))
+        self._err_logger.error(self._free_text_log(msg))
+
+
+logger = CustomLogger()
