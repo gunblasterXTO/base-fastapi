@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Final, Literal
+from typing import Final
 
 from app.core.constants import LogMsg
 from app.core.settings import Settings
@@ -69,14 +69,7 @@ class CustomLogger:
         }
         self.info_logger.info(accept_log)
 
-    def complete(
-        self,
-        result: Literal[
-            LogMsg.SUCCESS_RESP, LogMsg.INTERNAL_ERR_RESP,
-            LogMsg.EXTERNAL_ERR_RESP
-        ],
-        time: float
-    ) -> None:
+    def complete(self, result: str, time: float) -> None:
         """Record response from server.
 
         Args:
