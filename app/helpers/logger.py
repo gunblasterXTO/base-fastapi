@@ -1,5 +1,6 @@
 import logging
 import uuid
+from logging.handlers import RotatingFileHandler
 from typing import Final
 
 from app.core.constants import LogMsg
@@ -9,6 +10,8 @@ from app.core.settings import Settings
 class CustomLogger:
     FORMAT: Final = "%(asctime)s - %(levelname)s - %(message)s"
     DATEFMT: Final = "%d-%m-%Y %I:%M:%S"
+    MAX_SIZE: Final = 10_000_000  # 10 MB
+    BACKUP_COUNT: Final = 5
 
     def __init__(self) -> None:
         self.uuid: str | None = None
@@ -23,21 +26,33 @@ class CustomLogger:
         # debug log: log process
         self.debug_logger = logging.getLogger("debug_log")
         self.debug_logger.setLevel(logging.DEBUG)
-        debug_file_handler = logging.FileHandler(Settings.DEBUG_LOG_FILE)
+        debug_file_handler = RotatingFileHandler(
+            filename=Settings.DEBUG_LOG_FILE,
+            maxBytes=CustomLogger.MAX_SIZE,
+            backupCount=CustomLogger.BACKUP_COUNT
+        )
         debug_file_handler.setFormatter(formatter)
         self.debug_logger.addHandler(debug_file_handler)
 
         # info log: log incoming request and response
         self.info_logger = logging.getLogger("info_log")
         self.info_logger.setLevel(logging.INFO)
-        info_file_handler = logging.FileHandler(Settings.INFO_LOG_FILE)
+        info_file_handler = RotatingFileHandler(
+            filename=Settings.INFO_LOG_FILE,
+            maxBytes=CustomLogger.MAX_SIZE,
+            backupCount=CustomLogger.BACKUP_COUNT
+        )
         info_file_handler.setFormatter(formatter)
         self.info_logger.addHandler(info_file_handler)
 
         # error log: log error in the process
         self.err_logger = logging.getLogger("err_log")
         self.err_logger.setLevel(logging.ERROR)
-        err_file_handler = logging.FileHandler(Settings.ERR_LOG_FILE)
+        err_file_handler = RotatingFileHandler(
+            filename=Settings.ERR_LOG_FILE,
+            maxBytes=CustomLogger.MAX_SIZE,
+            backupCount=CustomLogger.BACKUP_COUNT
+        )
         err_file_handler.setFormatter(formatter)
         self.err_logger.addHandler(err_file_handler)
 
