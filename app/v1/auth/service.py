@@ -19,6 +19,15 @@ class AuthService:
     def register_new_user(
         self, new_user: RegisterRequestDTO
     ) -> RegisterResponseDTO:
+        """
+        Register new user.
+
+        Args:
+            - new_user: user object coming from client.
+
+        Return:
+            - user: user object created from new_user param.
+        """
         existing_user = (
             self.user_controller.get_user_by_username(new_user.username)
         )
@@ -31,6 +40,16 @@ class AuthService:
         return user
 
     def authenticate_user(self, username: str, password: str) -> User:
+        """
+        Authenticate user by its credentials.
+
+        Args:
+            - username: username coming from client.
+            - password: hashed password coming from client.
+
+        Return:
+            - user: user object that fits to given username and password.
+        """
         user = self.user_controller.get_user_by_username(username)
         if user and user.pwd == password:
             return user
