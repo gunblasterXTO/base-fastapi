@@ -12,15 +12,13 @@ class RegisterRequestDTO(BaseModel):
     username: str
     email: str
     password: str
-    country_origin: str
 
 
 class RegisterResponseDTO(BaseModel):
-    user_id: int
+    id: int
     username: str
 
 
 class User(BaseModel):
     user_id: int
     username: str
-    pwd: str
