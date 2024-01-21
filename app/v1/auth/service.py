@@ -7,9 +7,10 @@ from app.db import Session
 from app.helpers.logger import logger
 from app.v1.auth.dao import UserDAO
 from app.v1.auth.dto import (
+    LoginRequestDTO,
+    LoginResponseDTO,
     RegisterRequestDTO,
-    RegisterResponseDTO,
-    User
+    RegisterResponseDTO
 )
 
 
@@ -30,7 +31,7 @@ class AuthService:
             - db_sess: database session.
 
         Return:
-            - user: user object created from new_user param.
+            - user_obj: user object created from new_user param.
         """
         existing_user = (
             self.user_dao.get_user_by_username(
@@ -43,20 +44,20 @@ class AuthService:
                 detail="User is already registered"
             )
 
-        user = self.user_dao.create_new_user(new_user, db_sess)
-        if not user:
+        user_db = self.user_dao.create_new_user(new_user, db_sess)
+        if not user_db:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal error"
             )
-        return user
+
+        return RegisterResponseDTO(id=user_db.id, username=user_db.name)
 
     def authenticate_user(
         self,
-        username: str,
-        password: str,
+        user: LoginRequestDTO,
         db_sess: Session
-    ) -> User:
+    ) -> LoginResponseDTO:
         """
         Authenticate user by its credentials.
 
@@ -68,12 +69,12 @@ class AuthService:
         Return:
             - user: user object that fits to given username and password.
         """
-        user = self.user_dao.get_user_by_username(username, db_sess)
-        if not user:
-            logger.error(f"Wrong username({username}) / password({password})")
+        user_db = self.user_dao.get_user_by_username(user.username, db_sess)
+        if not user_db:
+            logger.error(f"Wrong username/password ({user})")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid credentials"
             )
 
-        return user
+        return LoginResponseDTO(username=user_db.name)

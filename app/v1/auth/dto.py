@@ -8,6 +8,10 @@ class LoginRequestDTO(BaseModel):
     password: str
 
 
+class LoginResponseDTO(BaseModel):
+    username: str
+
+
 class RegisterRequestDTO(BaseModel):
     username: str
     email: str
@@ -16,9 +20,4 @@ class RegisterRequestDTO(BaseModel):
 
 class RegisterResponseDTO(BaseModel):
     id: int
-    username: str
-
-
-class User(BaseModel):
-    user_id: int
     username: str

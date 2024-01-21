@@ -1,14 +1,12 @@
 # responsible for handling user input, business flow,
 # intermediary between view and the business logic (service).
 # stateless, handle particular request and not retain state between request.
+from typing import Optional
+
 from app.db import Session
 from app.db.models.user_mgmt import Users
 from app.helpers.logger import logger
-from app.v1.auth.dto import (
-    RegisterRequestDTO,
-    RegisterResponseDTO,
-    User
-)
+from app.v1.auth.dto import RegisterRequestDTO
 
 
 class UserDAO:
@@ -16,32 +14,9 @@ class UserDAO:
         pass
 
     @staticmethod
-    def get_user_by_id(user_id: int, db_sess: Session) -> User | None:
-        """Get user data from user id.
-
-        Args:
-            - user_id: user id from client request
-            - db_sess: database session dependency
-
-        Return:
-            - user_obj: user object if any
-        """
-        user = db_sess.query(
-            Users.id, Users.name
-        ).filter(
-            Users.id == user_id
-        ).first()
-
-        if user:
-            user_obj = User(user_id=user.id, username=user.name)
-        else:
-            user_obj = None
-        return user_obj
-
-    @staticmethod
     def get_user_by_username(
         username: str, db_sess: Session
-    ) -> User | None:
+    ) -> Optional[Users]:
         """
         Get user data from username.
 
@@ -57,17 +32,12 @@ class UserDAO:
         ).filter(
             Users.name == username
         ).first()
-
-        if user:
-            user_obj = User(user_id=user.id, username=user.name)
-        else:
-            user_obj = None
-        return user_obj
+        return user
 
     @staticmethod
     def create_new_user(
         new_user: RegisterRequestDTO, db_sess: Session
-    ) -> RegisterResponseDTO | None:
+    ) -> Optional[Users]:
         """
         Create new user record.
 
@@ -89,10 +59,7 @@ class UserDAO:
 
         try:
             db_sess.commit()
-            user_obj = RegisterResponseDTO(
-                id=new_user_obj.id,
-                username=new_user_obj.name
-            )
+            user_obj = new_user_obj
         except Exception as err:
             db_sess.rollback()
             logger.error(f"Fail to add user {new_user}: {err}")
