@@ -5,7 +5,7 @@ from fastapi import HTTPException, status
 
 from app.db import Session
 from app.helpers.logger import logger
-from app.v1.auth.controller import UserController
+from app.v1.auth.dao import UserDAO
 from app.v1.auth.dto import (
     RegisterRequestDTO,
     RegisterResponseDTO,
@@ -14,8 +14,8 @@ from app.v1.auth.dto import (
 
 
 class AuthService:
-    def __init__(self, user_controller: UserController):
-        self.user_controller = user_controller
+    def __init__(self, user_dao: UserDAO):
+        self.user_dao = user_dao
 
     def register_new_user(
         self,
@@ -33,7 +33,7 @@ class AuthService:
             - user: user object created from new_user param.
         """
         existing_user = (
-            self.user_controller.get_user_by_username(
+            self.user_dao.get_user_by_username(
                 new_user.username, db_sess
             )
         )
@@ -42,7 +42,13 @@ class AuthService:
                 status_code=status.HTTP_409_CONFLICT,
                 detail="User is already registered"
             )
-        user = self.user_controller.create_new_user(new_user, db_sess)
+
+        user = self.user_dao.create_new_user(new_user, db_sess)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal error"
+            )
         return user
 
     def authenticate_user(
@@ -62,12 +68,12 @@ class AuthService:
         Return:
             - user: user object that fits to given username and password.
         """
-        user = self.user_controller.get_user_by_username(username, db_sess)
-        if user and user.pwd == password:
-            return user
-        else:
-            logger.error("Wrong username or password")
+        user = self.user_dao.get_user_by_username(username, db_sess)
+        if not user:
+            logger.error(f"Wrong username({username}) / password({password})")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid credentials"
             )
+
+        return user

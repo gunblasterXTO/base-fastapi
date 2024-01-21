@@ -5,12 +5,11 @@ from fastapi.responses import JSONResponse
 from app.db import db, Session
 from app.helpers.logger import logger
 from app.helpers.response import PostSuccessResponse
-from app.v1.auth.controller import UserController
+from app.v1.auth.dao import UserDAO
 from app.v1.auth.dto import LoginRequestDTO, RegisterRequestDTO
 from app.v1.auth.service import AuthService
 
-user_controller = UserController()
-auth_service = AuthService(user_controller)
+auth_service = AuthService(UserDAO())
 
 
 class AuthViews:
@@ -19,6 +18,10 @@ class AuthViews:
         user: RegisterRequestDTO,
         db_sess: Session = Depends(db.get_session)
     ) -> JSONResponse:
+        """
+        Register new user if related information haven't been in the db.
+        """
+        logger.debug("Registering new user...")
         new_user = auth_service.register_new_user(user, db_sess).model_dump()
         return JSONResponse(
             content=PostSuccessResponse(data=new_user).model_dump(),
@@ -30,7 +33,10 @@ class AuthViews:
         user: LoginRequestDTO,
         db_sess: Session = Depends(db.get_session)
     ) -> JSONResponse:
-        logger.debug("User loggin in")
+        """
+        Login user if the related information is correct.
+        """
+        logger.debug("Logging in user...")
         _ = auth_service.authenticate_user(
             username=user.username, password=user.password, db_sess=db_sess
         )
