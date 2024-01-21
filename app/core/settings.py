@@ -23,4 +23,4 @@ class Settings:
     DB_SERVER: Final = os.getenv("DB_SERVER")
     DB_PORT: Final = os.getenv("DB_PORT")
     DB_NAME: Final = os.getenv("DB_NAME")
-    DB_URL: Final = "sqlite://sqlite.db"
+    DB_URL: Final = "sqlite:///sqlite.db"
