@@ -1,9 +1,12 @@
 # responsible for cover business logic, core functionality of the application.
 # reusable, abstract from interface and focus on underlying business logic.
 # might be dependent to controller according to use cases.
-from fastapi import HTTPException, status
-
 from app.db import Session
+from app.helpers.exceptions import (
+    internal_exception,
+    registration_exception,
+    uname_pwd_exception
+)
 from app.helpers.logger import logger
 from app.v1.auth.dao import UserDAO
 from app.v1.auth.dto import (
@@ -39,17 +42,11 @@ class AuthService:
             )
         )
         if existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="User is already registered"
-            )
+            raise registration_exception
 
         user_db = self.user_dao.create_new_user(new_user, db_sess)
         if not user_db:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Internal error"
-            )
+            raise internal_exception
 
         return RegisterResponseDTO(id=user_db.id, username=user_db.name)
 
@@ -72,9 +69,6 @@ class AuthService:
         user_db = self.user_dao.get_user_by_username(user.username, db_sess)
         if not user_db:
             logger.error(f"Wrong username/password ({user})")
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials"
-            )
+            raise uname_pwd_exception
 
         return LoginResponseDTO(username=user_db.name)
