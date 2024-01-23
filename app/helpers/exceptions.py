@@ -22,3 +22,8 @@ registration_exception = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
     detail="User is already registered"
 )
+
+session_exist_exception = HTTPException(
+    status_code=status.HTTP_409_CONFLICT,
+    detail="User has an active session"
+)
