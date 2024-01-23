@@ -24,3 +24,8 @@ class Settings:
     DB_PORT: Final = os.getenv("DB_PORT")
     DB_NAME: Final = os.getenv("DB_NAME")
     DB_URL: Final = "sqlite:///sqlite.db"
+
+    # authentication
+    ALGO: Final = os.getenv("ALGORITHM")
+    SECRET_KEY: Final = os.getenv("SECRET_KEY")
+    TOKEN_EXP_MINUTES: Final = 30

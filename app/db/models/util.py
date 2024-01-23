@@ -7,6 +7,4 @@ class ModelsUtil:
 
     @staticmethod
     def generate_hash() -> str:
-        hash_string = uuid4().hex[:20]
-
-        return hash_string
+        return uuid4().hex
