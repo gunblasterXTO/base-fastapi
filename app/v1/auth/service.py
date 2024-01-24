@@ -62,11 +62,14 @@ class AuthService:
         if existing_user:
             raise registration_exception
 
+        hash_pass = self.create_hash_password(new_user.password)
+        new_user.password = hash_pass
+
         user_db = self.user_dao.create_new_user(new_user, db_sess)
         if not user_db:
             raise internal_exception
 
-        return RegisterResponseDTO(id=user_db.id, username=user_db.name)
+        return RegisterResponseDTO(username=str(user_db.username))
 
     def login_user(
         self, user: LoginRequestDTO, db_sess: Session
@@ -160,6 +163,11 @@ class AuthService:
     ) -> Optional[Users]:
         """
         Authenticate user by its credentials.
+
+        What we authenticate:
+
+            1. ensure username is registered
+            2. ensure password is valid
 
         Args:
             - username: username coming from client.
