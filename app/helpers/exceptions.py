@@ -12,6 +12,12 @@ credentials_exception = HTTPException(
     headers={"WWW-Authenticate": "Bearer"}
 )
 
+session_expired_exception = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Session expired",
+    headers={"WWW-Authenticate": "Bearer"}
+)
+
 uname_pwd_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Incorrect username or password",
