@@ -11,12 +11,13 @@ from passlib.context import CryptContext
 
 from app.core.settings import Settings
 from app.db import Session
-from app.db.models.user_mgmt import Users
+from app.db.models.user_mgmt import Sessions, Users
 from app.helpers.exceptions import (
     credentials_exception,
     internal_exception,
     registration_exception,
     session_exist_exception,
+    session_expired_exception,
     uname_pwd_exception
 )
 from app.helpers.logger import logger
@@ -78,15 +79,17 @@ class AuthService:
         if not user_db:
             raise uname_pwd_exception
 
-        user_session = self.session_service.create_session(
+        session_id = self.session_service.create_session(
             user.username, db_sess
         )
-        if user_session is None:
+        if session_id is None:
             raise internal_exception
-        if len(user_session) == 0:
-            raise session_exist_exception
 
-        token_data = TokenDataDTO(sub=user.username, session=user_session)
+        token_data = TokenDataDTO(
+            sub=str(user_db.username),
+            sub_id=str(user_db.id_hash),
+            session=session_id
+        )
         access_token = self.create_access_token(data=token_data)
         return LoginResponseDTO(access_token=access_token, token_type="bearer")
 
@@ -113,7 +116,7 @@ class AuthService:
         return encoded_jwt
 
     @staticmethod
-    def verify_access_token(token: str) -> TokenDataDTO:
+    def verify_token(token: str) -> TokenDataDTO:
         """
         Parse access token detail.
 
@@ -130,6 +133,41 @@ class AuthService:
         if not (token_data.sub and token_data.session):
             raise credentials_exception
         return token_data
+
+    def validate_session(
+        self, token: TokenDataDTO, db_sess: Session
+    ) -> Sessions:
+        """
+        Check whether session is exist in db or not.
+
+        Args:
+            - token
+            - by: check session either by "id" or "username"
+            - db_sess
+
+        Return:
+            - session_obj
+        """
+        session_obj = (
+            self.session_service
+            .session_dao
+            .get_session(id=token.session, username=token.sub, db_sess=db_sess)
+        )
+        if not session_obj:
+            raise credentials_exception
+
+        if not session_obj.is_active:
+            raise session_expired_exception
+
+        if token.exp and token.exp > datetime.utcnow():
+            if (
+                self.session_service
+                .close_session(session=token.session, db_sess=db_sess)
+            ):
+                raise session_expired_exception
+            raise internal_exception
+
+        return session_obj
 
     def create_hash_password(self, password: str) -> str:
         """
@@ -212,8 +250,35 @@ class SessionService:
         )
         if active_session:
             logger.debug(f"{username} has an active session")
-            return ""
+            raise session_exist_exception
 
         session = self.session_dao.create_new_session(username, db_sess)
         session_id = str(session.id) if session else None
         return session_id
+
+    def close_session(self, session: str, db_sess: Session) -> bool:
+        """
+        Set session status to inactive.
+
+        Args:
+            - session
+            - db_sess
+
+        Return:
+            boolean
+        """
+        session_obj = (
+            self.session_dao
+            .get_session_by_id(id=session, db_sess=db_sess)
+        )
+        if not session_obj:
+            logger.debug(f"Session {session} not found")
+            return True
+
+        if (
+            self.session_dao
+            .set_as_inactive(session_obj=session_obj, db_sess=db_sess)
+        ):
+            return True
+
+        return False

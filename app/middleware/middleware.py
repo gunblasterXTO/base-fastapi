@@ -6,11 +6,14 @@ from starlette.middleware.base import (
     RequestResponseEndpoint
 )
 
+from app.core.constants import ExcludeAuthMiddlewarePath
 from app.helpers.logger import logger
 from app.middleware.logger import LogMiddleware
+from app.middleware.security import SecurityMiddleware
 
 
 log_middlware = LogMiddleware(logger=logger)
+security_midleware = SecurityMiddleware()
 
 
 class Middlewares(BaseHTTPMiddleware):
@@ -26,6 +29,17 @@ class Middlewares(BaseHTTPMiddleware):
         """
         start_time = time.time()
         await log_middlware.record_req(request=request)
+
+        if (
+            ExcludeAuthMiddlewarePath.REGISTER.value not in request.url.path
+            or ExcludeAuthMiddlewarePath.LOGIN.value not in request.url.path
+        ):
+            auth_header = request.headers.get("Authorization", "")
+            user_id, username = security_midleware.authenticate_user(
+                auth_header=auth_header
+            )
+            request.username = username  # type: ignore
+            request.user_id = user_id  # type: ignore
 
         response = await call_next(request)
 

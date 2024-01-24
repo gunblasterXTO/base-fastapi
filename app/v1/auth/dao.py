@@ -28,7 +28,7 @@ class UserDAO:
             - user_obj: user object if any
         """
         user = db_sess.query(
-            Users.id, Users.username, Users.pass_hash
+            Users
         ).filter(
             Users.username == username
         ).first()
@@ -72,6 +72,29 @@ class SessionDAO:
         pass
 
     @staticmethod
+    def get_session(
+        id: str, username: str, db_sess: Session
+    ) -> Optional[Sessions]:
+        """
+        Get session record.
+
+        Args:
+            - id: session id
+            - username
+
+        Return:
+            - session
+        """
+        session = db_sess.query(
+            Sessions
+        ).filter(
+            Sessions.id == id,
+            Sessions.username == username
+        ).first()
+
+        return session
+
+    @staticmethod
     def get_session_by_id(
         id: str, db_sess: Session
     ) -> Optional[Sessions]:
@@ -87,8 +110,7 @@ class SessionDAO:
         session = db_sess.query(
             Sessions
         ).filter(
-            Sessions.id == id,
-            Sessions.is_active == 1
+            Sessions.id == id
         ).first()
 
         return session
@@ -142,3 +164,25 @@ class SessionDAO:
             session_obj = None
 
         return session_obj
+
+    @staticmethod
+    def set_as_inactive(session_obj: Sessions, db_sess: Session) -> bool:
+        """
+        Set session status to inactive.
+
+        Args:
+            - id: session_ id
+            - db_sess
+
+        Return:
+            boolean
+        """
+        session_obj.is_active = 0  # type: ignore
+        try:
+            db_sess.commit()
+        except Exception as err:
+            db_sess.rollback()
+            logger.error(f"Fail to inactive session {id}: {err}")
+            return False
+        else:
+            return True
