@@ -49,10 +49,9 @@ class UserDAO:
             - user_obj: newly created user record containing necessary detail
         """
         new_user_dict = {
-            "name": new_user.username,
+            "username": new_user.username,
             "email": new_user.email,
-            "pass_hash": f"{new_user.password}notreallyhash",
-            "pass_salt": f"{new_user.password}notreallysalt"
+            "pass_hash": new_user.password
         }
         new_user_obj = Users(**new_user_dict)
         db_sess.add(new_user_obj)
@@ -62,7 +61,7 @@ class UserDAO:
             user_obj = new_user_obj
         except Exception as err:
             db_sess.rollback()
-            logger.error(f"Fail to add user {new_user}: {err}")
+            logger.error(f"Fail to add user {new_user.username}: {err}")
             user_obj = None
 
         return user_obj

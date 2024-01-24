@@ -21,7 +21,6 @@ class RegisterRequestDTO(BaseModel):
 
 
 class RegisterResponseDTO(BaseModel):
-    id: int
     username: str
 
 
