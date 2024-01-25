@@ -35,9 +35,10 @@ class Middlewares(BaseHTTPMiddleware):
             or ExcludeAuthMiddlewarePath.LOGIN.value not in request.url.path
         ):
             auth_header = request.headers.get("Authorization", "")
-            user_id, username = security_midleware.authenticate_user(
+            user_id, username, sess_id = security_midleware.authenticate_user(
                 auth_header=auth_header
             )
+            request.session_id = sess_id  # type: ignore
             request.username = username  # type: ignore
             request.user_id = user_id  # type: ignore
 

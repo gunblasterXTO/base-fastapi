@@ -23,7 +23,9 @@ class SecurityMiddleware:
         self.auth_service = auth_service
         self.db_sess = db_sess
 
-    def authenticate_user(self, auth_header: Optional[str]) -> Tuple[str, str]:
+    def authenticate_user(
+        self, auth_header: Optional[str]
+    ) -> Tuple[str, str, str]:
         """
         Ensure user is a valid user that has access to other backend services.
 
@@ -42,7 +44,7 @@ class SecurityMiddleware:
         token_detail = self.check_jwt_token(token)
         _ = self.check_session(token_detail)
 
-        return token_detail.sub_id, token_detail.sub
+        return token_detail.sub_id, token_detail.sub, token_detail.session
 
     def check_jwt_token(self, token: str) -> TokenDataDTO:
         """
