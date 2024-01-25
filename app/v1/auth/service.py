@@ -93,6 +93,27 @@ class AuthService:
         access_token = self.create_access_token(data=token_data)
         return LoginResponseDTO(access_token=access_token, token_type="bearer")
 
+    def logout_user(
+        self, username: str, session: str, db_sess: Session
+    ) -> bool:
+        """
+        Close session for passed username and session.
+
+        Args:
+            - username
+            - session: session id
+            - db_sess
+
+        Return:
+            boolean
+        """
+        if self.session_service.close_session(
+            session=session, username=username, db_sess=db_sess
+        ):
+            return True
+
+        raise internal_exception
+
     def create_access_token(
         self,
         data: TokenDataDTO,
@@ -162,7 +183,10 @@ class AuthService:
         if token.exp and token.exp > datetime.utcnow():
             if (
                 self.session_service
-                .close_session(session=token.session, db_sess=db_sess)
+                .close_session(
+                    session=token.session, username=token.sub,
+                    db_sess=db_sess
+                )
             ):
                 raise session_expired_exception
             raise internal_exception
@@ -256,12 +280,15 @@ class SessionService:
         session_id = str(session.id) if session else None
         return session_id
 
-    def close_session(self, session: str, db_sess: Session) -> bool:
+    def close_session(
+        self, session: str, username: str, db_sess: Session
+    ) -> bool:
         """
         Set session status to inactive.
 
         Args:
             - session
+            - username
             - db_sess
 
         Return:
@@ -269,7 +296,7 @@ class SessionService:
         """
         session_obj = (
             self.session_dao
-            .get_session_by_id(id=session, db_sess=db_sess)
+            .get_session(id=session, username=username, db_sess=db_sess)
         )
         if not session_obj:
             logger.debug(f"Session {session} not found")

@@ -1,5 +1,5 @@
 # responsible to handle HTTP request and produces correspond response
-from fastapi import Depends, status
+from fastapi import Depends, Request, status
 from fastapi.responses import JSONResponse
 
 from app.db import db, Session
@@ -42,4 +42,23 @@ class AuthViews:
         return JSONResponse(
             content=PostSuccessResponse(data=user_db).model_dump(),
             status_code=status.HTTP_200_OK
+        )
+
+    async def logout(
+        self,
+        request: Request,
+        db_sess: Session = Depends(db.get_session)
+    ) -> JSONResponse:
+        """
+        Logout user, clear session.
+        """
+        username = request.username  # type: ignore
+        session_id = request.sess_id  # type: ignore
+        logger.debug(f"Logging out {username} - {session_id}...")
+        _ = auth_service.logout_user(
+            username=username, session=session_id, db_sess=db_sess
+        )
+        return JSONResponse(
+            content="",
+            status_code=status.HTTP_204_NO_CONTENT
         )
