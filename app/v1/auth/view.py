@@ -38,9 +38,9 @@ class AuthViews:
         Login user if the related information is correct.
         """
         logger.debug(f"Logging in {user}...")
-        user_db = auth_service.login_user(user, db_sess).model_dump()
+        login_creds = auth_service.login_user(user, db_sess).model_dump()
         return JSONResponse(
-            content=PostSuccessResponse(data=user_db).model_dump(),
+            content=PostSuccessResponse(data=login_creds).model_dump(),
             status_code=status.HTTP_200_OK
         )
 

@@ -24,11 +24,6 @@ class RegisterResponseDTO(BaseModel):
     username: str
 
 
-class TokenResponseDTO(BaseModel):
-    access_token: str
-    token_type: str
-
-
 class TokenDataDTO(BaseModel):
     """JWT standard structure"""
     sub: str  # username
