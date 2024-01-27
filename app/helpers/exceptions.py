@@ -14,7 +14,7 @@ credentials_exception = HTTPException(
 
 session_expired_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
-    detail="Session expired",
+    detail="Session has expired",
     headers={"WWW-Authenticate": "Bearer"}
 )
 
