@@ -43,9 +43,9 @@ class Middlewares(BaseHTTPMiddleware):
             )
 
         if any([sub_id, sub, session_id]):
-            request.session_id = session_id  # type: ignore
-            request.username = sub  # type: ignore
-            request.user_id = sub_id  # type: ignore
+            request.state.session_id = session_id
+            request.state.username = sub
+            request.state.user_id = sub_id
 
         response = await call_next(request)
 

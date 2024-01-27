@@ -52,8 +52,8 @@ class AuthViews:
         """
         Logout user, clear session.
         """
-        username = request.username  # type: ignore
-        session_id = request.sess_id  # type: ignore
+        username = request.state.username
+        session_id = request.state.session_id
         logger.debug(f"Logging out {username} - {session_id}...")
         _ = auth_service.logout_user(
             username=username, session=session_id, db_sess=db_sess
