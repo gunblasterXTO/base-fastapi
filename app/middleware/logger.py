@@ -22,7 +22,8 @@ class LogMiddleware:
 
         self.logger.accept(
             url=request.url.path, method=request.method,
-            query_param=str(request.query_params), payload=payload
+            header=str(request.headers), query_param=str(request.query_params),
+            payload=payload
         )
 
     def record_resp(self, response: Response, time: float) -> None:

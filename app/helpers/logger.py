@@ -62,7 +62,7 @@ class CustomLogger:
         return str(uuid.uuid4())
 
     def accept(
-        self, url: str, method: str,
+        self, url: str, method: str, header: str,
         query_param: str | None = None, payload: dict | None = None
     ) -> None:
         """Record incoming request from client.
@@ -78,6 +78,7 @@ class CustomLogger:
             "message": LogMsg.ACCEPT_REQ.value,
             "req_id": self.uuid,
             "url": url,
+            "header": header,
             "method": method,
             "query_param": query_param,
             "payload": payload
