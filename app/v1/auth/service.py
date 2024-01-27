@@ -7,6 +7,7 @@ from typing import Optional
 
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
+from jose.exceptions import ExpiredSignatureError, JWTError
 from passlib.context import CryptContext
 
 from app.core.settings import Settings
@@ -136,8 +137,7 @@ class AuthService:
         )
         return encoded_jwt
 
-    @staticmethod
-    def verify_token(token: str) -> TokenDataDTO:
+    def verify_token(self, token: str) -> TokenDataDTO:
         """
         Parse access token detail.
 
@@ -147,12 +147,23 @@ class AuthService:
         Return:
             - token_data
         """
-        payload = jwt.decode(
-            token=token, key=Settings.SECRET_KEY, algorithms=Settings.ALGO
-        )
-        token_data = TokenDataDTO(**payload)
-        if not (token_data.sub and token_data.session):
+        try:
+            payload = jwt.decode(
+                token=token, key=Settings.SECRET_KEY, algorithms=Settings.ALGO
+            )
+        except ExpiredSignatureError as exc:
+            # no need to manually check for expiry time
+            # this exception means the token already expires
+            logger.debug(f"JWT token ({token}) has expired: {exc}")
+            raise session_expired_exception
+        except JWTError:
+            logger.debug(f"JWT token ({token}) is invalid")
             raise credentials_exception
+        except Exception as exc:
+            logger.debug(f"Fail to decode JWT token ({token}): {exc}")
+            raise internal_exception
+
+        token_data = TokenDataDTO(**payload)
         return token_data
 
     def validate_session(
@@ -175,21 +186,12 @@ class AuthService:
             .get_session(id=token.session, username=token.sub, db_sess=db_sess)
         )
         if not session_obj:
+            logger.debug(f"Session ({token.session} | {token.sub}) not exist")
             raise credentials_exception
 
         if not session_obj.is_active:
-            raise session_expired_exception
-
-        if token.exp and token.exp > datetime.utcnow():
-            if (
-                self.session_service
-                .close_session(
-                    session=token.session, username=token.sub,
-                    db_sess=db_sess
-                )
-            ):
-                raise session_expired_exception
-            raise internal_exception
+            logger.debug(f"Session ({token.session} | {token.sub}) logged out")
+            raise credentials_exception
 
         return session_obj
 
