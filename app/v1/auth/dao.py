@@ -166,9 +166,9 @@ class SessionDAO:
         return session_obj
 
     @staticmethod
-    def set_as_inactive(session_obj: Sessions, db_sess: Session) -> bool:
+    def delete_session(session_obj: Sessions, db_sess: Session) -> bool:
         """
-        Set session status to inactive.
+        Delete session record.
 
         Args:
             - id: session_ id
@@ -177,8 +177,8 @@ class SessionDAO:
         Return:
             boolean
         """
-        session_obj.is_active = 0  # type: ignore
         try:
+            db_sess.delete(session_obj)
             db_sess.commit()
         except Exception as err:
             db_sess.rollback()

@@ -275,8 +275,9 @@ class SessionService:
             username=username, db_sess=db_sess
         )
         if active_session:
+            # delete existing session
             logger.debug(f"{username} has an active session")
-            raise session_exist_exception
+            self.session_dao.delete_session(active_session, db_sess)
 
         session = self.session_dao.create_new_session(username, db_sess)
         session_id = str(session.id) if session else None
@@ -306,7 +307,7 @@ class SessionService:
 
         if (
             self.session_dao
-            .set_as_inactive(session_obj=session_obj, db_sess=db_sess)
+            .delete_session(session_obj=session_obj, db_sess=db_sess)
         ):
             return True
 
