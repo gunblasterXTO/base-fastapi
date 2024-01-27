@@ -10,13 +10,13 @@ class Database:
         self._engine = create_engine(
             url=Settings.DB_URL, connect_args={"check_same_thread": False}
         )  # connect_args for sqlite only
-        self._session = sessionmaker(
+        self.session = sessionmaker(
             autocommit=False, autoflush=True, bind=self._engine
         )
 
     def get_session(self) -> Generator:
         try:
-            self.db = self._session()
+            self.db = self.session()
             yield self.db
         finally:
             self.db.close()
