@@ -32,7 +32,12 @@ class TestAuthRoutes:
         assert response_body["data"]["username"] == json_body["username"]
 
         with db.session() as db_sess:
-            db_sess.query(Users).filter(Users.username == json_body["username"]).delete()
+            (
+                db_sess
+                .query(Users)
+                .filter(Users.username == json_body["username"])
+                .delete()
+            )
             db_sess.commit()
 
     def test_register_fail_username(self, ):
