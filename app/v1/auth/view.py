@@ -1,6 +1,6 @@
 # responsible to handle HTTP request and produces correspond response
 from fastapi import Depends, Request, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from app.db import db, Session
 from app.helpers.logger import logger
@@ -48,7 +48,7 @@ class AuthViews:
         self,
         request: Request,
         db_sess: Session = Depends(db.get_session)
-    ) -> JSONResponse:
+    ) -> Response:
         """
         Logout user, blacklist session id.
         """
@@ -58,7 +58,4 @@ class AuthViews:
         auth_service.logout_user(
             username=username, session=session_id, db_sess=db_sess
         )
-        return JSONResponse(
-            content="",
-            status_code=status.HTTP_204_NO_CONTENT
-        )
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
