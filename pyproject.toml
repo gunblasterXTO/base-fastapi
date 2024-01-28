@@ -32,11 +32,20 @@ pre-commit = "^3.6.0"
 
 [tool.ruff]
 line-length = 79
+src = ["app", "tests"]
 
 [tool.ruff.format]
 docstring-code-line-length = 60
 indent-style = "tab"
-skip-magic-trailing-comma = true
+skip-magic-trailing-comma = false
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+case-sensitive = true
+detect-same-package = true
+force-wrap-aliases = true
+order-by-type = true
+known-first-party = ["app"]
 
 [build-system]
 requires = ["poetry-core"]
