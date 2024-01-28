@@ -1,7 +1,7 @@
 # responsible for handling user input, business flow,
 # intermediary between view and the business logic (service).
 # stateless, handle particular request and not retain state between request.
-from typing import Optional
+from typing import List, Optional, Union
 
 from app.db import Session
 from app.db.models.user_mgmt import Sessions, Users
@@ -118,12 +118,13 @@ class SessionDAO:
     @staticmethod
     def get_session_by_username(
         username: str, db_sess: Session
-    ) -> Optional[Sessions]:
+    ) -> List[Sessions]:
         """
         Get session record.
 
         Args:
             - username
+            - db_sess
 
         Return:
             - session
@@ -133,7 +134,7 @@ class SessionDAO:
         ).filter(
             Sessions.username == username,
             Sessions.is_active == 1
-        ).first()
+        ).all()
 
         return session
 
@@ -166,23 +167,31 @@ class SessionDAO:
         return session_obj
 
     @staticmethod
-    def delete_session(session_obj: Sessions, db_sess: Session) -> bool:
+    def set_as_inactive(
+        session_objs: Union[Sessions, List[Sessions]],
+        db_sess: Session
+    ) -> bool:
         """
-        Delete session record.
+        Set session status to inactive.
 
         Args:
-            - id: session_ id
+            - id: session_ id or list of session_id
             - db_sess
 
         Return:
             boolean
         """
+        if isinstance(session_objs, list):
+            for session_obj in session_objs:
+                session_obj.is_active = 0  # type: ignore
+        else:
+            session_objs.is_active = 0  # type: ignore
+
         try:
-            db_sess.delete(session_obj)
             db_sess.commit()
         except Exception as err:
             db_sess.rollback()
-            logger.error(f"Fail to inactive session {id}: {err}")
+            logger.error(f"Fail to inactive session {session_objs}: {err}")
             return False
         else:
             return True

@@ -3,7 +3,7 @@
 # might be dependent to controller according to use cases.
 from __future__ import annotations
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import List, Optional, Union
 
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
@@ -17,7 +17,6 @@ from app.helpers.exceptions import (
     credentials_exception,
     internal_exception,
     registration_exception,
-    session_exist_exception,
     session_expired_exception,
     uname_pwd_exception
 )
@@ -96,7 +95,7 @@ class AuthService:
 
     def logout_user(
         self, username: str, session: str, db_sess: Session
-    ) -> bool:
+    ) -> None:
         """
         Close session for passed username and session.
 
@@ -108,10 +107,16 @@ class AuthService:
         Return:
             boolean
         """
-        if self.session_service.close_session(
+        user_session = self.session_service.get_user_session(
             session=session, username=username, db_sess=db_sess
+        )
+        if not user_session:
+            return
+
+        if self.session_service.blacklist_session(
+            sessions=user_session, db_sess=db_sess
         ):
-            return True
+            return
 
         raise internal_exception
 
@@ -182,8 +187,9 @@ class AuthService:
         """
         session_obj = (
             self.session_service
-            .session_dao
-            .get_session(id=token.session, username=token.sub, db_sess=db_sess)
+            .get_user_session(
+                session=token.session, username=token.sub, db_sess=db_sess
+            )
         )
         if not session_obj:
             logger.debug(f"Session ({token.session} | {token.sub}) not exist")
@@ -271,23 +277,42 @@ class SessionService:
         Return:
             - session_id
         """
-        active_session = self.session_dao.get_session_by_username(
+        user_sessions = self.session_dao.get_session_by_username(
             username=username, db_sess=db_sess
         )
-        if active_session:
-            # delete existing session
+        if user_sessions:
+            # set all as inactive to maintain only one session per user
             logger.debug(f"{username} has an active session")
-            self.session_dao.delete_session(active_session, db_sess)
+            if not self.blacklist_session(user_sessions, db_sess):
+                raise internal_exception
 
         session = self.session_dao.create_new_session(username, db_sess)
         session_id = str(session.id) if session else None
         return session_id
 
-    def close_session(
-        self, session: str, username: str, db_sess: Session
+    def blacklist_session(
+        self, sessions: Union[List[Sessions], Sessions], db_sess: Session
     ) -> bool:
         """
-        Set session status to inactive.
+        Set sessions to inactive.
+
+        Args:
+            - sessions
+            - db_sess
+
+        Return:
+            boolean
+        """
+        return (
+            self.session_dao
+            .set_as_inactive(session_objs=sessions, db_sess=db_sess)
+        )
+
+    def get_user_session(
+        self, session: str, username: str, db_sess: Session
+    ) -> Optional[Sessions]:
+        """
+        Get session from passed session id and username.
 
         Args:
             - session
@@ -295,7 +320,7 @@ class SessionService:
             - db_sess
 
         Return:
-            boolean
+            - session_obj
         """
         session_obj = (
             self.session_dao
@@ -303,12 +328,5 @@ class SessionService:
         )
         if not session_obj:
             logger.debug(f"Session {session} not found")
-            return True
 
-        if (
-            self.session_dao
-            .delete_session(session_obj=session_obj, db_sess=db_sess)
-        ):
-            return True
-
-        return False
+        return session_obj
