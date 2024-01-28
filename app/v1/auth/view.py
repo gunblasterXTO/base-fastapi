@@ -50,12 +50,12 @@ class AuthViews:
         db_sess: Session = Depends(db.get_session)
     ) -> JSONResponse:
         """
-        Logout user, clear session.
+        Logout user, blacklist session id.
         """
         username = request.state.username
         session_id = request.state.session_id
         logger.debug(f"Logging out {username} - {session_id}...")
-        _ = auth_service.logout_user(
+        auth_service.logout_user(
             username=username, session=session_id, db_sess=db_sess
         )
         return JSONResponse(
