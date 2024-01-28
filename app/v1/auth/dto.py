@@ -1,7 +1,7 @@
 # responsible to store DTOs (Data Transfer Object) between client
 # and server and internal business logic.
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class LoginRequestDTO(BaseModel):
@@ -16,7 +16,7 @@ class LoginResponseDTO(BaseModel):
 
 class RegisterRequestDTO(BaseModel):
     username: str
-    email: str
+    email: EmailStr
     password: str
 
 
