@@ -24,6 +24,19 @@ pytest = "^7.4.4"
 ruff = "^0.1.11"
 mypy = "^1.8.0"
 alembic = "^1.13.1"
+coverage = "^7.4.1"
+bandit = "^1.7.7"
+types-python-jose = "^3.3.4.20240106"
+types-passlib = "^1.7.7.20240106"
+pre-commit = "^3.6.0"
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.format]
+docstring-code-line-length = 60
+indent-style = "tab"
+skip-magic-trailing-comma = true
 
 [build-system]
 requires = ["poetry-core"]
