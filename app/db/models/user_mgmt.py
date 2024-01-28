@@ -15,7 +15,9 @@ class Sessions(Base):
         String(64), primary_key=True, nullable=False, index=True,
         default=ModelsUtil.generate_hash
     )
-    username = Column(Integer, ForeignKey("users.username"), nullable=False)
+    username = Column(
+        String(256), ForeignKey("users.username"), nullable=False
+    )
 
 
 class Users(Base):
