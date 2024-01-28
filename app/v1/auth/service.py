@@ -93,7 +93,7 @@ class AuthService:
             session=session_id
         )
         access_token = self.create_access_token(data=token_data)
-        return LoginResponseDTO(access_token=access_token, token_type="bearer")
+        return LoginResponseDTO(access_token=access_token)
 
     def logout_user(
         self, username: str, session: str, db_sess: Session

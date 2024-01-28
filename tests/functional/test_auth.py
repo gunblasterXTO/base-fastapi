@@ -94,9 +94,6 @@ class TestAuthRoutes:
         assert "access_token" in response_body["data"]
         assert isinstance(response_body["data"]["access_token"], str)
 
-        assert "token_type" in response_body["data"]
-        assert response_body["data"]["token_type"] == "bearer"
-
     def test_login_fail_by_username(self):
         json_body = {
             "username": "user",

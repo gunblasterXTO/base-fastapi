@@ -11,7 +11,6 @@ class LoginRequestDTO(BaseModel):
 
 class LoginResponseDTO(BaseModel):
     access_token: str
-    token_type: str
 
 
 class RegisterRequestDTO(BaseModel):
