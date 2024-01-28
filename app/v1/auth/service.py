@@ -77,6 +77,13 @@ class AuthService:
     def login_user(
         self, user: LoginRequestDTO, db_sess: Session
     ) -> LoginResponseDTO:
+        """
+        Ensure user credentials are valid and return bearer token.
+
+        Args:
+            - user
+            - db_sess
+        """
         user_db = self.authenticate_user(user, db_sess)
         if not user_db:
             raise uname_pwd_exception
@@ -105,9 +112,6 @@ class AuthService:
             - username
             - session: session id
             - db_sess
-
-        Return:
-            boolean
         """
         user_session = self.session_service.get_user_session(
             session=session, username=username, db_sess=db_sess
