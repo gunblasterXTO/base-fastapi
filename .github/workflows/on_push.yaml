@@ -9,9 +9,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        description: 'Clones repository to runners's file system
-        providing access to codebase during the workflow run.
-        (at)v2 specifies the version fo the action to use.'
+        description: |
+          Clones repository to runners's file system
+          providing access to codebase during the workflow run.
+          (at)v2 specifies the version fo the action to use.
 
       - name: Set up Python
         uses: actions/setup-python@v4
