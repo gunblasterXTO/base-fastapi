@@ -83,6 +83,9 @@ class AuthService:
         Args:
             - user
             - db_sess
+
+        Return:
+            - LoginResponseDTO
         """
         user_db = self.authenticate_user(user, db_sess)
         if not user_db:
