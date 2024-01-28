@@ -20,6 +20,7 @@ repos:
     hooks:
       - id: ruff
         files: ./app
+        args: [--fix, --exit-non-zero-on-fix]
       # standardize styling
       - id: ruff-format
         files: ./app

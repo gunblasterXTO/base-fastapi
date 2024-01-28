@@ -34,6 +34,9 @@ pre-commit = "^3.6.0"
 line-length = 79
 src = ["app", "tests"]
 
+[tool.ruff.lint]
+fixable = ["ALL"]
+
 [tool.ruff.format]
 docstring-code-line-length = 60
 indent-style = "tab"
