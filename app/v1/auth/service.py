@@ -2,6 +2,8 @@
 # reusable, abstract from interface and focus on underlying business logic.
 # might be dependent to controller according to use cases.
 from __future__ import annotations
+
+import datetime as dt
 from datetime import datetime, timedelta
 from typing import List, Optional, Union
 
@@ -135,7 +137,7 @@ class AuthService:
         Return:
             - encoded_jwt
         """
-        expiry = datetime.utcnow() + exp_delta
+        expiry = datetime.now(dt.UTC) + exp_delta
         data.exp = expiry
         encoded_jwt = jwt.encode(
             claims=dict(data), key=Settings.SECRET_KEY, algorithm=Settings.ALGO
