@@ -15,12 +15,12 @@ repos:
       # check type hinting
       - id: mypy
         files: ./app
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.13
+  - repo: local
     hooks:
       - id: ruff
-        files: ./app
+        name: ruff
+        description: Run ruff formatter
+        entry: poetry run ruff format ./app
+        language: system
+        'types_or': [python, pyi]
         args: [--fix, --exit-non-zero-on-fix]
-      # standardize styling
-      - id: ruff-format
-        files: ./app
