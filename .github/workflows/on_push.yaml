@@ -7,9 +7,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout code  # clone repo to runner's file system
         uses: actions/checkout@v2
-        description: 'Clones repository to runners's file system'
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -22,7 +21,6 @@ jobs:
           pip install poetry
           poetry install
           poetry shell
-        description: 'Use poetry as dependency manager and virtual environments'
 
       - name: Run tests with coverage coverage
         run: |
