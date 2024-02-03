@@ -25,5 +25,5 @@ repos:
         description: Run ruff formatter
         entry: ruff format ./app
         language: system
-        args: [--fix, --exit-non-zero-on-fix]
+        args: [--exit-non-zero-on-fix]
         types: [python]
