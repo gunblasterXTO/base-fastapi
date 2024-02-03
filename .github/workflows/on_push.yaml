@@ -2,12 +2,13 @@ name: On Push
 on:
   push:
     branches: "*"
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code  # clone repo to runner's file system
+      - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up Python
@@ -38,13 +39,3 @@ jobs:
 
       - name: Security scanning
         run: bandit -r ./app
-        continue-on-error: true
-
-      - name: Check bandit result
-        run: |
-          if [ $? -eq 0 ]; then
-            echo "Bandit passed, no security issues found"
-          else
-            echo "Bandit failed, security issues found"
-            exit 1
-          fi
