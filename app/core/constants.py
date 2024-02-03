@@ -21,3 +21,8 @@ class LogMsg(Enum):
     SUCCESS_RESP = "Success"
     INTERNAL_ERR_RESP = "Internal error"
     EXTERNAL_ERR_RESP = "External error"
+
+
+class ExcludeAuthMiddlewarePath(Enum):
+    LOGIN = "/login"
+    REGISTER = "/register"

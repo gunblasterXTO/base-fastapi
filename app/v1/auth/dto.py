@@ -1,6 +1,7 @@
 # responsible to store DTOs (Data Transfer Object) between client
 # and server and internal business logic.
-from pydantic import BaseModel
+from datetime import datetime
+from pydantic import BaseModel, EmailStr
 
 
 class LoginRequestDTO(BaseModel):
@@ -8,19 +9,24 @@ class LoginRequestDTO(BaseModel):
     password: str
 
 
+class LoginResponseDTO(BaseModel):
+    access_token: str
+
+
 class RegisterRequestDTO(BaseModel):
     username: str
-    email: str
+    email: EmailStr
     password: str
-    country_origin: str
 
 
 class RegisterResponseDTO(BaseModel):
-    user_id: int
     username: str
 
 
-class User(BaseModel):
-    user_id: int
-    username: str
-    pwd: str
+class TokenDataDTO(BaseModel):
+    """JWT standard structure"""
+
+    sub: str  # username
+    sub_id: str
+    session: str
+    exp: datetime | None = None  # expiry of the token
