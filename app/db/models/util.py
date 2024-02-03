@@ -2,7 +2,7 @@ from uuid import uuid4
 
 
 class ModelsUtil:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @staticmethod

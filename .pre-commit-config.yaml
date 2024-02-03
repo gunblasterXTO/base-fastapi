@@ -5,18 +5,15 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: detect-private-key
-      - id: name-tests-test
-      - id: pretty-format-json
       - id: no-commit-to-branch
         args: ['--branch', 'main']
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: ''  # use latest version
+    rev: 'v1.8.0'  # use latest version
     hooks:
       - id: mypy
         name: mypy
-        entry: mypy
+        entry: ./scripts/run_mypy.sh
         language: system
-        args: ["--disallow-untyped-defs"]
         types: [python]
   - repo: local
     hooks:

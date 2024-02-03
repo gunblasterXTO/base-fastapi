@@ -10,10 +10,9 @@ from app.v1.auth.dto import TokenDataDTO
 
 
 class SecurityMiddleware:
-    def __init__(self):
+    def __init__(self) -> None:
         self.auth_service = AuthService(
-            session_service=SessionService(SessionDAO()),
-            user_dao=UserDAO()
+            session_service=SessionService(SessionDAO()), user_dao=UserDAO()
         )
 
     def authenticate_user(

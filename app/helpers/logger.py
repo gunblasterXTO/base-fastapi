@@ -29,7 +29,7 @@ class CustomLogger:
         debug_file_handler = RotatingFileHandler(
             filename=Settings.DEBUG_LOG_FILE,
             maxBytes=CustomLogger.MAX_SIZE,
-            backupCount=CustomLogger.BACKUP_COUNT
+            backupCount=CustomLogger.BACKUP_COUNT,
         )
         debug_file_handler.setFormatter(formatter)
         self._debug_logger.addHandler(debug_file_handler)
@@ -40,7 +40,7 @@ class CustomLogger:
         info_file_handler = RotatingFileHandler(
             filename=Settings.INFO_LOG_FILE,
             maxBytes=CustomLogger.MAX_SIZE,
-            backupCount=CustomLogger.BACKUP_COUNT
+            backupCount=CustomLogger.BACKUP_COUNT,
         )
         info_file_handler.setFormatter(formatter)
         self._info_logger.addHandler(info_file_handler)
@@ -51,7 +51,7 @@ class CustomLogger:
         err_file_handler = RotatingFileHandler(
             filename=Settings.ERR_LOG_FILE,
             maxBytes=CustomLogger.MAX_SIZE,
-            backupCount=CustomLogger.BACKUP_COUNT
+            backupCount=CustomLogger.BACKUP_COUNT,
         )
         err_file_handler.setFormatter(formatter)
         self._err_logger.addHandler(err_file_handler)
@@ -62,8 +62,12 @@ class CustomLogger:
         return str(uuid.uuid4())
 
     def accept(
-        self, url: str, method: str, header: str,
-        query_param: str | None = None, payload: dict | None = None
+        self,
+        url: str,
+        method: str,
+        header: str,
+        query_param: str | None = None,
+        payload: dict | None = None,
     ) -> None:
         """Record incoming request from client.
 
@@ -81,7 +85,7 @@ class CustomLogger:
             "header": header,
             "method": method,
             "query_param": query_param,
-            "payload": payload
+            "payload": payload,
         }
         self._info_logger.info(accept_log)
 
@@ -92,11 +96,7 @@ class CustomLogger:
             - result
             - time: time needed from accepting request until process finish
         """
-        complete_log = {
-            "message": result,
-            "req_id": self.uuid,
-            "time": time
-        }
+        complete_log = {"message": result, "req_id": self.uuid, "time": time}
         self._info_logger.info(complete_log)
 
     def _free_text_log(self, msg: str) -> str:

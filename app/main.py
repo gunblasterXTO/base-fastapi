@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -8,17 +8,16 @@ from app.middleware import Middlewares
 from app.v1 import v1_router
 
 
-app = FastAPI(
-    title=Settings.PROJECT_NAME,
-    version=Settings.VERSION
-)
+app = FastAPI(title=Settings.PROJECT_NAME, version=Settings.VERSION)
 app.add_middleware(Middlewares)
 app.include_router(v1_router)
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request, exc) -> JSONResponse:
+async def validation_exception_handler(
+    request: Request, exc: Exception
+) -> JSONResponse:
     return JSONResponse(
         content=BaseFailResponse(detail="Validation error").model_dump(),
-        status_code=status.HTTP_400_BAD_REQUEST
+        status_code=status.HTTP_400_BAD_REQUEST,
     )

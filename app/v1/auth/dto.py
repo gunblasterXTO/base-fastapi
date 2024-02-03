@@ -25,6 +25,7 @@ class RegisterResponseDTO(BaseModel):
 
 class TokenDataDTO(BaseModel):
     """JWT standard structure"""
+
     sub: str  # username
     sub_id: str
     session: str

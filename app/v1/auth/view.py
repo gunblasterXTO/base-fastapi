@@ -17,7 +17,7 @@ class AuthViews:
     async def registration(
         self,
         user: RegisterRequestDTO,
-        db_sess: Session = Depends(db.get_session)
+        db_sess: Session = Depends(db.get_session),
     ) -> JSONResponse:
         """
         Register new user if related information haven't been in the db.
@@ -26,13 +26,11 @@ class AuthViews:
         new_user = auth_service.register_new_user(user, db_sess).model_dump()
         return JSONResponse(
             content=PostSuccessResponse(data=new_user).model_dump(),
-            status_code=status.HTTP_201_CREATED
+            status_code=status.HTTP_201_CREATED,
         )
 
     async def login(
-        self,
-        user: LoginRequestDTO,
-        db_sess: Session = Depends(db.get_session)
+        self, user: LoginRequestDTO, db_sess: Session = Depends(db.get_session)
     ) -> JSONResponse:
         """
         Login user if the related information is correct.
@@ -41,13 +39,11 @@ class AuthViews:
         login_creds = auth_service.login_user(user, db_sess).model_dump()
         return JSONResponse(
             content=PostSuccessResponse(data=login_creds).model_dump(),
-            status_code=status.HTTP_200_OK
+            status_code=status.HTTP_200_OK,
         )
 
     async def logout(
-        self,
-        request: Request,
-        db_sess: Session = Depends(db.get_session)
+        self, request: Request, db_sess: Session = Depends(db.get_session)
     ) -> Response:
         """
         Logout user, blacklist session id.

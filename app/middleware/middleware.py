@@ -4,7 +4,7 @@ from fastapi import HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import (
     BaseHTTPMiddleware,
-    RequestResponseEndpoint
+    RequestResponseEndpoint,
 )
 
 from app.helpers.logger import logger
@@ -39,7 +39,7 @@ class Middlewares(BaseHTTPMiddleware):
             return JSONResponse(
                 content=BaseFailResponse(detail=exc.detail).model_dump(),
                 status_code=exc.status_code,
-                headers=exc.headers
+                headers=exc.headers,
             )
 
         if any([sub_id, sub, session_id]):

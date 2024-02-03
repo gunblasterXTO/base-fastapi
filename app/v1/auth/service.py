@@ -20,7 +20,7 @@ from app.helpers.exceptions import (
     internal_exception,
     registration_exception,
     session_expired_exception,
-    uname_pwd_exception
+    uname_pwd_exception,
 )
 from app.helpers.logger import logger
 from app.v1.auth.dao import SessionDAO, UserDAO
@@ -29,23 +29,19 @@ from app.v1.auth.dto import (
     LoginResponseDTO,
     RegisterRequestDTO,
     RegisterResponseDTO,
-    TokenDataDTO
+    TokenDataDTO,
 )
 
 
 class AuthService:
     def __init__(self, session_service: SessionService, user_dao: UserDAO):
         self.oauth_scheme = OAuth2PasswordBearer(tokenUrl="token")
-        self.pwd_context = CryptContext(
-            schemes=["argon2"], deprecated="auto"
-        )
+        self.pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
         self.session_service = session_service
         self.user_dao = user_dao
 
     def register_new_user(
-        self,
-        new_user: RegisterRequestDTO,
-        db_sess: Session
+        self, new_user: RegisterRequestDTO, db_sess: Session
     ) -> RegisterResponseDTO:
         """
         Register new user.
@@ -57,10 +53,8 @@ class AuthService:
         Return:
             - user_obj: user object created from new_user param.
         """
-        existing_user = (
-            self.user_dao.get_user_by_username(
-                new_user.username, db_sess
-            )
+        existing_user = self.user_dao.get_user_by_username(
+            new_user.username, db_sess
         )
         if existing_user:
             raise registration_exception
@@ -100,7 +94,7 @@ class AuthService:
         token_data = TokenDataDTO(
             sub=str(user_db.username),
             sub_id=str(user_db.id_hash),
-            session=session_id
+            session=session_id,
         )
         access_token = self.create_access_token(data=token_data)
         return LoginResponseDTO(access_token=access_token)
@@ -132,7 +126,7 @@ class AuthService:
     def create_access_token(
         self,
         data: TokenDataDTO,
-        exp_delta: timedelta = timedelta(minutes=Settings.TOKEN_EXP_MINUTES)
+        exp_delta: timedelta = timedelta(minutes=Settings.TOKEN_EXP_MINUTES),
     ) -> str:
         """
         Create JWT token.
@@ -194,11 +188,8 @@ class AuthService:
         Return:
             - session_obj
         """
-        session_obj = (
-            self.session_service
-            .get_user_session(
-                session=token.session, username=token.sub, db_sess=db_sess
-            )
+        session_obj = self.session_service.get_user_session(
+            session=token.session, username=token.sub, db_sess=db_sess
         )
         if not session_obj:
             logger.debug(f"Session ({token.session} | {token.sub}) not exist")
@@ -236,9 +227,7 @@ class AuthService:
         return self.pwd_context.verify(plain_pass, hashed_pass)
 
     def authenticate_user(
-        self,
-        user: LoginRequestDTO,
-        db_sess: Session
+        self, user: LoginRequestDTO, db_sess: Session
     ) -> Optional[Users]:
         """
         Authenticate user by its credentials.
@@ -272,9 +261,7 @@ class SessionService:
     def __init__(self, session_dao: SessionDAO):
         self.session_dao = session_dao
 
-    def create_session(
-        self, username: str, db_sess: Session
-    ) -> str | None:
+    def create_session(self, username: str, db_sess: Session) -> str | None:
         """
         Create new session after login.
 
@@ -312,9 +299,8 @@ class SessionService:
         Return:
             boolean
         """
-        return (
-            self.session_dao
-            .set_as_inactive(session_objs=sessions, db_sess=db_sess)
+        return self.session_dao.set_as_inactive(
+            session_objs=sessions, db_sess=db_sess
         )
 
     def get_user_session(
@@ -331,9 +317,8 @@ class SessionService:
         Return:
             - session_obj
         """
-        session_obj = (
-            self.session_dao
-            .get_session(id=session, username=username, db_sess=db_sess)
+        session_obj = self.session_dao.get_session(
+            id=session, username=username, db_sess=db_sess
         )
         if not session_obj:
             logger.debug(f"Session {session} not found")

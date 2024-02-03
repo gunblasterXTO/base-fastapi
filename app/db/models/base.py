@@ -15,5 +15,5 @@ class Base:
 
     # to generate tablename from classname
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(cls):  # type: ignore
         return cls.__name__.lower()

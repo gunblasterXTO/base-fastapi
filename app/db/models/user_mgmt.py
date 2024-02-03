@@ -1,10 +1,4 @@
-from sqlalchemy import (
-    Column,
-    ForeignKey,
-    Integer,
-    SmallInteger,
-    String
-)
+from sqlalchemy import Column, ForeignKey, Integer, SmallInteger, String
 
 from app.db.models.base import Base
 from app.db.models.util import ModelsUtil
@@ -12,8 +6,11 @@ from app.db.models.util import ModelsUtil
 
 class Sessions(Base):
     id = Column(
-        String(64), primary_key=True, nullable=False, index=True,
-        default=ModelsUtil.generate_hash
+        String(64),
+        primary_key=True,
+        nullable=False,
+        index=True,
+        default=ModelsUtil.generate_hash,
     )
     username = Column(
         String(256), ForeignKey("users.username"), nullable=False

@@ -10,7 +10,7 @@ from app.v1.auth.dto import RegisterRequestDTO
 
 
 class UserDAO:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @staticmethod
@@ -27,11 +27,7 @@ class UserDAO:
         Return:
             - user_obj: user object if any
         """
-        user = db_sess.query(
-            Users
-        ).filter(
-            Users.username == username
-        ).first()
+        user = db_sess.query(Users).filter(Users.username == username).first()
         return user
 
     @staticmethod
@@ -51,7 +47,7 @@ class UserDAO:
         new_user_dict = {
             "username": new_user.username,
             "email": new_user.email,
-            "pass_hash": new_user.password
+            "pass_hash": new_user.password,
         }
         new_user_obj = Users(**new_user_dict)
         db_sess.add(new_user_obj)
@@ -68,7 +64,7 @@ class UserDAO:
 
 
 class SessionDAO:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @staticmethod
@@ -85,19 +81,16 @@ class SessionDAO:
         Return:
             - session
         """
-        session = db_sess.query(
-            Sessions
-        ).filter(
-            Sessions.id == id,
-            Sessions.username == username
-        ).first()
+        session = (
+            db_sess.query(Sessions)
+            .filter(Sessions.id == id, Sessions.username == username)
+            .first()
+        )
 
         return session
 
     @staticmethod
-    def get_session_by_id(
-        id: str, db_sess: Session
-    ) -> Optional[Sessions]:
+    def get_session_by_id(id: str, db_sess: Session) -> Optional[Sessions]:
         """
         Get session record.
 
@@ -107,11 +100,7 @@ class SessionDAO:
         Return:
             - session
         """
-        session = db_sess.query(
-            Sessions
-        ).filter(
-            Sessions.id == id
-        ).first()
+        session = db_sess.query(Sessions).filter(Sessions.id == id).first()
 
         return session
 
@@ -129,12 +118,11 @@ class SessionDAO:
         Return:
             - session
         """
-        session = db_sess.query(
-            Sessions
-        ).filter(
-            Sessions.username == username,
-            Sessions.is_active == 1
-        ).all()
+        session = (
+            db_sess.query(Sessions)
+            .filter(Sessions.username == username, Sessions.is_active == 1)
+            .all()
+        )
 
         return session
 
@@ -168,8 +156,7 @@ class SessionDAO:
 
     @staticmethod
     def set_as_inactive(
-        session_objs: Union[Sessions, List[Sessions]],
-        db_sess: Session
+        session_objs: Union[Sessions, List[Sessions]], db_sess: Session
     ) -> bool:
         """
         Set session status to inactive.
