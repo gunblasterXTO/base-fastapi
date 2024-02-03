@@ -9,14 +9,14 @@ repos:
       - id: pretty-format-json
       - id: no-commit-to-branch
         args: ['--branch', 'main']
-  - repo: local
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: ''  # use latest version
     hooks:
       - id: mypy
         name: mypy
-        description: Run mypy type hinting check
+        entry: mypy
         language: system
-        entry: mypy ./app
-        args: [--disallow-untyped-defs]
+        args: ["--disallow-untyped-defs"]
         types: [python]
   - repo: local
     hooks:
@@ -25,5 +25,4 @@ repos:
         description: Run ruff formatter
         entry: ruff format ./app
         language: system
-        args: [--exit-non-zero-on-fix]
         types: [python]
