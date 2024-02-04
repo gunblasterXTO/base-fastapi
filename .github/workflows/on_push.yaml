@@ -44,7 +44,7 @@ jobs:
       - name: Check coverage threshold
         run: |
           COVERAGE_THRESHOLD=80
-          COVERAGE_PERCENTAGE=$(coverage report -m | grep -oP '\d+\%')
+          COVERAGE_PERCENTAGE=$(poetry run coverage report -m | grep -oP '\d+\%')
           if [ "${COVERAGE_PERCENTAGE%\%}" -lt "$COVERAGE_THRESHOLD" ]; then
             echo "Coverage is below threshold: $COVERAGE_PERCENTAGE, expected at least $COVERAGE_THRESHOLD"
             exit 1
