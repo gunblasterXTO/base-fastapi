@@ -25,13 +25,10 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-root
 
-      - name: Use poetry shell
-        run: poetry shell
-
       - name: Run tests with coverage coverage
         run: |
-          coverage run -m pytest
-          coverage report -m
+          poetry run coverage run -m pytest
+          poetry run coverage report -m
 
       - name: Check coverage threshold
         run: |
@@ -43,4 +40,4 @@ jobs:
           fi
 
       - name: Security scanning
-        run: bandit -r ./app
+        run: poetry run bandit -r ./app
