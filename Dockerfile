@@ -13,8 +13,8 @@ ENV PYTHONUNBUFFERED=1
 # Set working directory
 WORKDIR /app
 
-# Copy the dependency file to the working directory
-COPY pyproject.toml poetry.lock /app/
+# Copy the source code into the container.
+COPY . /app/
 
 # Install Poetry and dependencies
 RUN pip install poetry && \
@@ -22,9 +22,6 @@ RUN pip install poetry && \
     poetry config virtualenvs.create false && \
     # Install dependencies listed in pyproject.toml without user interaction and without color codes in the output
     poetry install --no-interaction --no-ansi
-
-# Copy the source code into the container.
-COPY . /app/
 
 # Expose the port that the application listens on.
 EXPOSE 8000
