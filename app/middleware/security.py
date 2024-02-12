@@ -33,6 +33,7 @@ class SecurityMiddleware:
         if (
             ExcludeAuthMiddlewarePath.REGISTER.value in path
             or ExcludeAuthMiddlewarePath.LOGIN.value in path
+            or ExcludeAuthMiddlewarePath.DOCS.value in path
         ):
             return sub_id, sub, session_id
 
