@@ -3,7 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.core.settings import Settings
-from app.helpers.response import BaseFailResponse
+from app.helpers.response import BaseFailResponse, BaseSuccessResponse
 from app.middleware import Middlewares
 from app.v1 import v1_router
 
@@ -11,6 +11,11 @@ from app.v1 import v1_router
 app = FastAPI(title=Settings.PROJECT_NAME, version=Settings.VERSION)
 app.add_middleware(Middlewares)
 app.include_router(v1_router)
+
+
+@app.get("/")
+async def health_check() -> str:
+    return "Server is working"
 
 
 @app.exception_handler(RequestValidationError)

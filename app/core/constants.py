@@ -24,5 +24,6 @@ class LogMsg(Enum):
 
 
 class ExcludeAuthMiddlewarePath(Enum):
+    DOCS = "/docs"
     LOGIN = "/login"
     REGISTER = "/register"
